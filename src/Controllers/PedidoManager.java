@@ -1,57 +1,63 @@
-package Controllers;
+package Entidades;
+import Controllers.*;
+import java.util.HashMap;
 
-import java.util.ArrayList;
-import Entidades.*;
-
-
-
-public class PedidoManager {
-    // Lista para almacenar los pedidos
-    private ArrayList<Pedido> pedidos;
+public class Pedido {
+    // Atributos del pedido
+    private int id;
+    private HashMap<Producto, Integer> productos; // Producto y cantidad
+    private double total;
+    private String estado;
 
     // Constructor
-    public PedidoManager() {
-        pedidos = new ArrayList<>();
+    public Pedido(int id) {
+        this.id = id;
+        this.productos = new HashMap<>();
+        this.total = 0.0;
+        this.estado = "Pendiente";
     }
 
-    // Método para crear un nuevo pedido
-    public Pedido crearPedido() {
-        int nuevoId = pedidos.size() + 1; // Generar un ID para el pedido
-        Pedido nuevoPedido = new Pedido(nuevoId);
-        pedidos.add(nuevoPedido);
-        System.out.println("Pedido creado con ID: " + nuevoId);
-        return nuevoPedido;
-    }
-
-    // Método para obtener un pedido por ID
-    public Pedido obtenerPedidoPorId(int id) {
-        for (Pedido pedido : pedidos) {
-            if (pedido.getId() == id) {
-                return pedido;
-            }
-        }
-        return null;
-    }
-
-    // Método para procesar un pedido (cambiar su estado a "Procesado")
-    public void procesarPedido(int id) {
-        Pedido pedido = obtenerPedidoPorId(id);
-        if (pedido != null && pedido.getEstado().equals("Pendiente")) {
-            pedido.cambiarEstado("Procesado");
+    // Método para agregar un producto al pedido
+    public void agregarProducto(Producto producto, int cantidad) {
+        if (productos.containsKey(producto)) {
+            // Si el producto ya existe en el pedido, se aumenta la cantidad
+            productos.put(producto, productos.get(producto) + cantidad);
         } else {
-            System.out.println("El pedido no se puede procesar. Verifique el estado o ID del pedido.");
+            productos.put(producto, cantidad);
         }
+        // Actualizar el total del pedido
+        total += producto.getPrecio() * cantidad;
     }
 
-    // Método para mostrar todos los pedidos
-    public void mostrarPedidos() {
-        if (pedidos.isEmpty()) {
-            System.out.println("No hay pedidos registrados.");
-        } else {
-            for (Pedido pedido : pedidos) {
-                pedido.mostrarInfo();
-                System.out.println("------------------------");
-            }
+    // Método para obtener el total del pedido
+    public double getTotal() {
+        return total;
+    }
+
+    // Método para mostrar la información del pedido
+    public void mostrarInfo() {
+        System.out.println("ID Pedido: " + id);
+        System.out.println("Estado: " + estado);
+        System.out.println("Productos en el pedido:");
+        for (Producto producto : productos.keySet()) {
+            int cantidad = productos.get(producto);
+            System.out.println(producto.getNombre() + " - Cantidad: " + cantidad + " - Precio total: $" + (producto.getPrecio() * cantidad));
         }
+        System.out.println("Total del pedido: $" + total);
+    }
+
+    // Método para cambiar el estado del pedido
+    public void cambiarEstado(String nuevoEstado) {
+        this.estado = nuevoEstado;
+        System.out.println("El estado del pedido ha sido cambiado a: " + nuevoEstado);
+    }
+
+    // Método para obtener el estado del pedido
+    public String getEstado() {
+        return estado;
+    }
+
+    public int getId() {
+        return id;
     }
 }
